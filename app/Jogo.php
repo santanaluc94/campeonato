@@ -4,9 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DadosDoTime extends Model
+class Jogo extends Model
 {
     private $id;
+    private $classificacao;
+    private $nome;
     private $pontos;
     private $jogos;
     private $vitoria;
@@ -17,6 +19,16 @@ class DadosDoTime extends Model
     private $saldoDeGols;
 
     /* Sets */
+    public function setClassificacao($classificacao)
+    {
+        $this->classificacao = $classificacao;
+    }
+
+    public function setNome($nome)
+    {
+        $this->nome = $nome;
+    }
+
     public function setPontos($pontos)
     {
         $this->pontos = $pontos;
@@ -52,9 +64,9 @@ class DadosDoTime extends Model
         $this->golsContra = $golsContra;
     }
 
-    public function setSaldoDeGols($golsPro, $golsContra)
+    public function setSaldoDeGols($saldoDeGols)
     {
-        $this->saldoDeGols = $golsPro - $golsContra;
+        $this->saldoDeGols = $saldoDeGols;
     }
 
     public function setDados($id, $jogos, $pontos, $vitoria, $derrotas, $empates, $golsPro, $golsContra, $saldoDeGols)
@@ -74,6 +86,16 @@ class DadosDoTime extends Model
     public function getId($id)
     {
         return $this->id;
+    }
+
+    public function getClassificacao()
+    {
+        return $this->classificacao;
+    }
+
+    public function getNome()
+    {
+        return $this->nome;
     }
 
     public function getPontos()
@@ -131,4 +153,18 @@ class DadosDoTime extends Model
         ];
     }
 
+    public function getDadosPeloNome($nome)
+    {
+        return $data = [
+            'id' => $this->id,
+            'jogos' => $this->jogos,
+            'pontos' => $this->pontos,
+            'vitorias' => $this->vitoria,
+            'derrota' => $this->derrotas,
+            'empate' => $this->empates,
+            'gols_pro' => $this->golsPro,
+            'gols_contra' => $this->golsContra,
+            'saldo_de_gols' => $this->saldoDeGols,
+        ];
+    }
 }

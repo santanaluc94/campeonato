@@ -6,12 +6,12 @@ use Illuminate\Http\Request;
 
 class Partida extends Controller
 {
-    private $dadosDoTime;
+    private $jogo;
 
     public function __construct(
-        \App\DadosDoTime $dadosDoTime
+        \App\Jogo $jogo
     ) {
-        $this->dadosDoTime = $dadosDoTime;
+        $this->jogo = $jogo;
     }
 
     public function dadosDaRodada(Request $req)
@@ -50,6 +50,7 @@ class Partida extends Controller
             } else {
                 return "Preencha todos os campos";
             }
+
             $this->executarJogo($timeCasa, $timeVisitante);
         }
         die;
@@ -60,18 +61,20 @@ class Partida extends Controller
         echo '<pre>';
         $placarCasa = $timeCasa['placar_casa'];
         $timeCasa = $timeCasa['time_casa'];
+        // $timeCasa = $this->dadosDaRodada->getDadosPeloNome($timeCasa['time_casa']);
         $placarVisitante = $timeVisitante['placar_visitante'];
         $timeVisitante = $timeVisitante['time_visitante'];
+        // $timeVisitante = $this->dadosDaRodada->getDadosPeloNome($timeVisitante['time_visitante']);
 
         if (isset($placarCasa) && isset($placarVisitante)) {
             if ($placarCasa > $placarVisitante) {
                 if (isset($timeCasa)) {
                     $this->pontuar($placarCasa, $placarVisitante);
-                    $timeCasa->jogos();
-                    $timeCasa->vitoria();
-                    $timeCasa->golsPros($placarCasa);
-                    $timeCasa->golsContra($placarVisitante);
-                    $timeCasa->saldoGols();
+                    $this->jogos();
+                    $this->vitoria();
+                    $this->golsPros($placarCasa);
+                    $this->golsContra($placarVisitante);
+                    $this->saldoDeGols($placarCasa, $placarVisitante);
                 }
 
                 if (isset($timeVisitante)) {
@@ -123,9 +126,9 @@ class Partida extends Controller
     public function pontuar($golsTime1, $golsTime2)
     {
         if ($golsTime1 > $golsTime2) {
-            return $this->dadosDoTime->setPontos($this->dadosDoTime->getPontos() + 3);
+            return $this->jogo->setPontos($this->jogo->getPontos() + 3);
         } elseif ($golsTime1 == $golsTime2) {
-            $this->dadosDoTime->setPontos($this->dadosDoTime->getPontos() + 1);
+            $this->jogo->setPontos($this->jogo->getPontos() + 1);
         } else {
             return null;
         }
@@ -133,31 +136,37 @@ class Partida extends Controller
 
     public function jogos()
     {
-        $this->dadosDoTime->setJogos($this->dadosDoTime->getJogos() + 1);
+        $this->jogo->setJogos($this->jogo->getJogos() + 1);
     }
 
     public function vitoria()
     {
-        $this->dadosDoTime->setVitoria($this->dadosDoTime->getVitoria() + 1);
+        $this->jogo->setVitoria($this->jogo->getVitoria() + 1);
     }
 
     public function derrota()
     {
-        $this->dadosDoTime->setDerrota($this->dadosDoTime->getDerrota() + 1);
+        $this->jogo->setDerrota($this->jogo->getDerrota() + 1);
     }
 
     public function empate()
     {
-        $this->dadosDoTime->setEmpate($this->dadosDoTime->getEmpate() + 1);
+        $this->jogo->setEmpate($this->jogo->getEmpate() + 1);
     }
 
     public function golsPro($gp)
     {
-        $this->dadosDoTime->setGolsPros($this->dadosDoTime->getGolsPros() + $gp);
+        $this->jogo->setGolsPros($this->jogo->getGolsPros() + $gp);
     }
 
     public function golsContra($gc)
     {
-        $this->dadosDoTime->setGolsPros($this->dadosDoTime->getGolsPros() + $gc);
+        $this->jogo->setGolsPros($this->jogo->getGolsPros() + $gc);
+    }
+
+    public function saldoDeGols($gp, $gc)
+    {
+        $sg = $gp - $gc;
+        $this->jogo->setSaldoDeGols($this->jogo->getSaldoDeGols() + $sg);
     }
 }
