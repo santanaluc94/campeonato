@@ -14,6 +14,12 @@ class Partida extends Controller
         $this->jogo = $jogo;
     }
 
+    public function index()
+    {
+        $times = $this->jogo->orderBy('created_at', 'desc')->take(4)->get();
+        return view('/partida')->with('times', $times);
+    }
+
     public function dadosDaRodada(Request $req)
     {
         $data = $req->toArray();

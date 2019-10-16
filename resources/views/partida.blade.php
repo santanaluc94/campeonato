@@ -12,7 +12,7 @@
             <span class="texto-card">Sociedade Esportiva Teste</span>
             <input name="time_1" type="hidden" value="Sociedade Esportiva Teste" />
             <input name="placar_time_1" type="number" style="width: 50px;">
-                x 
+                x
             <span class="texto-card">Clube Atletico Teste</span>
             <input name="time_2" type="hidden" value="Clube Atletico Teste" />
             <input name="placar_time_2" type="number" style="width: 50px;">
@@ -23,7 +23,7 @@
             <span class="texto-card">Teste Futebol Clube</span>
             <input name="time_3" type="hidden" value="Teste Futebol Clube" />
             <input name="placar_time_3" type="number" style="width: 50px;">
-                x 
+                x
             <span class="texto-card">Clube Atlético Teste</span>
             <input name="time_4" type="hidden" value="Clube Atlético Teste" />
             <input name="placar_time_4" type="number" style="width: 50px;">
@@ -51,18 +51,19 @@
             </tr>
         </thead>
         <tbody>
+            @foreach($times as $time)
             <tr>
-                <td class="col-peq dados-classificacao">1</td>
-                <td class="col-times dados-classificacao">MARÍLIA</td>
-                <td class="col-peq dados-classificacao">8</td>
-                <td class="col-peq dados-classificacao">2</td>
-                <td class="col-peq dados-classificacao">2</td>
-                <td class="col-peq dados-classificacao">0</td>
-                <td class="col-peq dados-classificacao">5</td>
-                <td class="col-peq dados-classificacao">3</td>
-                <td class="col-peq dados-classificacao">2</td>
+                <td class="col-peq dados-classificacao">{{ $time->classificacao }}</td>
+                <td class="col-times dados-classificacao">{{ $time->nome }}</td>
+                <td class="col-peq dados-classificacao">{{ $time->pontos }}</td>
+                <td class="col-peq dados-classificacao">{{ $time->vitoria }}</td>
+                <td class="col-peq dados-classificacao">{{ $time->empate }}</td>
+                <td class="col-peq dados-classificacao">{{ $time->derrota }}</td>
+                <td class="col-peq dados-classificacao">{{ $time->gols_pro }}</td>
+                <td class="col-peq dados-classificacao">{{ $time->gols_contra }}</td>
+                <td class="col-peq dados-classificacao">{{ $time->saldo_de_gols }}</td>
             </tr>
-            
+            @endforeach
         </tbody>
     </table>
 </body>

@@ -15,8 +15,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/partida', function () {
-    return view('partida');
-});
+Route::get('/partida', ['uses' => 'Partida@index']);
 
 Route::post('/partida', ['uses' => 'Partida@dadosDaRodada']);
+
+Route::get('/cadastro_de_times', function () {
+    return view('cadastro_de_times');
+});
+
+Route::post('/cadastrar', ['uses' => 'Cadastro@cadastroDeTimes']);
