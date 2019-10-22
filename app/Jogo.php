@@ -69,21 +69,23 @@ class Jogo extends Model
         $this->saldoDeGols = $saldoDeGols;
     }
 
-    public function setDados($id, $jogos, $pontos, $vitoria, $derrotas, $empates, $golsPro, $golsContra, $saldoDeGols)
+    public function setDados($id, $classificacao, $nome, $jogos, $pontos, $vitoria, $derrota, $empate, $golsPro, $golsContra, $saldoDeGols)
     {
         $this->id = $id;
-        $this->jogos = $jogos;
+        $this->classificacao = $classificacao;
+        $this->nome = $nome;
         $this->pontos = $pontos;
+        $this->jogos = $jogos;
         $this->vitoria = $vitoria;
-        $this->derrotas = $derrotas;
-        $this->empates = $empates;
+        $this->derrota = $derrota;
+        $this->empate = $empate;
         $this->golsPro = $golsPro;
         $this->golsContra = $golsContra;
         $this->saldoDeGols = $saldoDeGols;
     }
 
     /* GETs */
-    public function getId($id)
+    public function getId()
     {
         return $this->id;
     }
@@ -142,11 +144,13 @@ class Jogo extends Model
     {
         return $data = [
             'id' => $this->id,
-            'jogos' => $this->jogos,
+            'classificacao' => $this->classificacao,
+            'nome' => $this->nome,
             'pontos' => $this->pontos,
-            'vitorias' => $this->vitoria,
-            'derrota' => $this->derrotas,
-            'empate' => $this->empates,
+            'jogos' => $this->jogos,
+            'vitoria' => $this->vitoria,
+            'derrota' => $this->derrota,
+            'empate' => $this->empate,
             'gols_pro' => $this->golsPro,
             'gols_contra' => $this->golsContra,
             'saldo_de_gols' => $this->saldoDeGols,
@@ -155,16 +159,6 @@ class Jogo extends Model
 
     public function getDadosPeloNome($nome)
     {
-        return $data = [
-            'id' => $this->id,
-            'jogos' => $this->jogos,
-            'pontos' => $this->pontos,
-            'vitorias' => $this->vitoria,
-            'derrota' => $this->derrotas,
-            'empate' => $this->empates,
-            'gols_pro' => $this->golsPro,
-            'gols_contra' => $this->golsContra,
-            'saldo_de_gols' => $this->saldoDeGols,
-        ];
+        return \DB::table('jogos')->get()->where('nome', $nome);
     }
 }

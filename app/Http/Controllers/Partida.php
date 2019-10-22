@@ -7,11 +7,14 @@ use Illuminate\Http\Request;
 class Partida extends Controller
 {
     private $jogo;
+    private $database;
 
     public function __construct(
-        \App\Jogo $jogo
+        \App\Jogo $jogo,
+        \DB $database
     ) {
         $this->jogo = $jogo;
+        $this->database = $database;
     }
 
     public function index()
@@ -58,121 +61,132 @@ class Partida extends Controller
             }
 
             $this->executarJogo($timeCasa, $timeVisitante);
+
+            return redirect('/partida');
         }
-        die;
     }
 
     public function executarJogo($timeCasa, $timeVisitante)
     {
         echo '<pre>';
+
+        /* Dados do Time Mandante */
         $placarCasa = $timeCasa['placar_casa'];
         $timeCasa = $timeCasa['time_casa'];
-        // $timeCasa = $this->dadosDaRodada->getDadosPeloNome($timeCasa['time_casa']);
+        $timeCasaDados = $this->jogo->getDadosPeloNome($timeCasa)->first();
+
+        /* Dados do Time Visitante */
         $placarVisitante = $timeVisitante['placar_visitante'];
         $timeVisitante = $timeVisitante['time_visitante'];
-        // $timeVisitante = $this->dadosDaRodada->getDadosPeloNome($timeVisitante['time_visitante']);
-
+        $timeVisitanteDados = $this->jogo->getDadosPeloNome($timeVisitante)->first();
+        // var_dump($timeCasaDados);die;
         if (isset($placarCasa) && isset($placarVisitante)) {
             if ($placarCasa > $placarVisitante) {
+                /* Vitória Time Mandante */
                 if (isset($timeCasa)) {
-                    $this->pontuar($placarCasa, $placarVisitante);
-                    $this->jogos();
-                    $this->vitoria();
-                    $this->golsPros($placarCasa);
-                    $this->golsContra($placarVisitante);
-                    $this->saldoDeGols($placarCasa, $placarVisitante);
+                    $this->pontuar($timeCasaDados, $timeVisitanteDados, $placarCasa, $placarVisitante);
+                    $this->jogos($timeCasaDados);
+                    $this->vitoria($timeCasaDados);
+                    $this->golsPro($timeCasaDados, $placarCasa);
+                    $this->golsContra($timeCasaDados, $placarVisitante);
+                    $this->saldoDeGols($timeCasaDados, $placarCasa, $placarVisitante);
                 }
 
                 if (isset($timeVisitante)) {
-                    $timeVisitante->jogos();
-                    $timeVisitante->derrota();
-                    $timeVisitante->golsPros($placarVisitante);
-                    $timeVisitante->golsContra($placarCasa);
-                    $timeVisitante->saldoGols();
+                    $this->jogos($timeVisitanteDados);
+                    $this->derrota($timeVisitanteDados);
+                    $this->golsPro($timeVisitanteDados, $placarVisitante);
+                    $this->golsContra($timeVisitanteDados, $placarCasa);
+                    $this->saldoDeGols($timeVisitanteDados, $placarCasa, $placarVisitante);
                 }
 
+                /* Empate */
             } elseif ($placarCasa == $placarVisitante) {
                 if (isset($timeCasa)) {
-                    $timeCasa->pontuar($placarCasa, $placarVisitante);
-                    $timeCasa->jogos();
-                    $timeCasa->empate();
-                    $timeCasa->golsPros($placarCasa);
-                    $timeCasa->golsContra($placarVisitante);
+                    $this->pontuar($timeCasaDados, $timeVisitanteDados, $placarCasa, $placarVisitante);
+                    $this->jogos($timeCasaDados);
+                    $this->empate($timeCasaDados);
+                    $this->golsPro($timeCasaDados, $placarCasa);
+                    $this->golsContra($timeCasaDados, $placarVisitante);
                 }
 
                 if (isset($timeVisitante)) {
-                    $timeVisitante->pontuar($placarVisitante, $placarCasa);
-                    $timeVisitante->jogos();
-                    $timeVisitante->empate();
-                    $timeVisitante->golsPros($placarVisitante);
-                    $timeVisitante->golsContra($placarCasa);
+                    $this->pontuar($timeCasaDados, $timeVisitanteDados, $placarCasa, $placarVisitante);
+                    $this->jogos($timeVisitanteDados);
+                    $this->empate($timeVisitanteDados);
+                    $this->golsPro($timeVisitanteDados, $placarVisitante);
+                    $this->golsContra($timeVisitanteDados, $placarCasa);
                 }
 
+                /* Vitória Time Visitante */
             } else {
                 if (isset($timeCasa)) {
-                    $timeCasa->jogos();
-                    $timeCasa->derrota();
-                    $timeCasa->golsPros($placarCasa);
-                    $timeCasa->golsContra($placarVisitante);
-                    $timeCasa->saldoGols();
+                    $this->jogos($timeCasaDados);
+                    $this->derrota($timeCasaDados);
+                    $this->golsPro($timeCasaDados, $placarCasa);
+                    $this->golsContra($timeCasaDados, $placarVisitante);
+                    $this->saldoDeGols($timeCasaDados, $placarCasa, $placarVisitante);
                 }
                 if (isset($timeVisitante)) {
-                    $timeVisitante->pontuar($placarVisitante, $placarCasa);
-                    $timeVisitante->jogos();
-                    $timeVisitante->vitoria();
-                    $timeVisitante->golsPros($placarVisitante);
-                    $timeVisitante->golsContra($placarCasa);
-                    $timeVisitante->saldoGols();
+                    $this->pontuar($timeCasaDados, $timeVisitanteDados, $placarCasa, $placarVisitante);
+                    $this->jogos($timeVisitanteDados);
+                    $this->vitoria($timeVisitanteDados);
+                    $this->golsPro($timeVisitanteDados, $placarVisitante);
+                    $this->golsContra($timeVisitanteDados, $placarCasa);
+                    $this->saldoDeGols($timeVisitanteDados, $placarCasa, $placarVisitante);
                 }
             }
         }
     }
 
     /* Funções de Resultados */
-    public function pontuar($golsTime1, $golsTime2)
+    public function pontuar($timeCasaDados, $timeVisitanteDados, $golsTime1, $golsTime2)
     {
         if ($golsTime1 > $golsTime2) {
-            return $this->jogo->setPontos($this->jogo->getPontos() + 3);
+            $this->jogo->setPontos($timeCasaDados->pontos + 3);
         } elseif ($golsTime1 == $golsTime2) {
-            $this->jogo->setPontos($this->jogo->getPontos() + 1);
+            $this->jogo->setPontos($timeCasaDados->pontos + 1);
+            $this->jogo->setPontos($timeVisitanteDados->pontos + 1);
+        } elseif ($golsTime1 < $golsTime2) {
+            $this->jogo->setPontos($timeVisitanteDados->pontos + 3);
         } else {
             return null;
         }
     }
 
-    public function jogos()
+    public function jogos($time)
     {
-        $this->jogo->setJogos($this->jogo->getJogos() + 1);
+        $this->jogo->setJogos($time->jogos + 1);
     }
 
-    public function vitoria()
+    public function vitoria($time)
     {
-        $this->jogo->setVitoria($this->jogo->getVitoria() + 1);
+        $this->jogo->setVitoria($time->vitoria + 1);
     }
 
-    public function derrota()
+    public function derrota($time)
     {
-        $this->jogo->setDerrota($this->jogo->getDerrota() + 1);
+        $this->jogo->setDerrota($time->derrota + 1);
     }
 
-    public function empate()
+    public function empate($time)
     {
-        $this->jogo->setEmpate($this->jogo->getEmpate() + 1);
+        $this->jogo->setEmpate($time->empate + 1);
     }
 
-    public function golsPro($gp)
+    public function golsPro($time, $gp)
     {
-        $this->jogo->setGolsPros($this->jogo->getGolsPros() + $gp);
+        $this->jogo->setGolsPro($time->gols_pro + $gp);
     }
 
-    public function golsContra($gc)
+    public function golsContra($time, $gc)
     {
-        $this->jogo->setGolsPros($this->jogo->getGolsPros() + $gc);
+        $this->jogo->setGolsPro($time->gols_contra + $gc);
     }
 
-    public function saldoDeGols($gp, $gc)
+    public function saldoDeGols($time, $gp, $gc)
     {
         $sg = $gp - $gc;
-        $this->jogo->setSaldoDeGols($this->jogo->getSaldoDeGols() + $sg);
+        $this->jogo->setSaldoDeGols($time->saldo_de_gols + $sg);
     }
 }

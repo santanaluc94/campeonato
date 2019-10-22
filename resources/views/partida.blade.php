@@ -13,8 +13,8 @@
             <input name="time_1" type="hidden" value="Sociedade Esportiva Teste" />
             <input name="placar_time_1" type="number" style="width: 50px;">
                 x
-            <span class="texto-card">Clube Atletico Teste</span>
-            <input name="time_2" type="hidden" value="Clube Atletico Teste" />
+            <span class="texto-card">Associação Deportiva Teste</span>
+            <input name="time_2" type="hidden" value="Associação Deportiva Teste" />
             <input name="placar_time_2" type="number" style="width: 50px;">
         </div>
 
